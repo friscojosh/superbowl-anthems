@@ -15,6 +15,12 @@ colnames(sb_times) <- c("year", "superbowl", "singer",
                         "start", "end", "length", "length_s",
                         "sex", "youtube", "birthdate")
 
+covers <- read_csv("data/covers.csv")
+
+colnames(covers) <- c("song", "gladys_start", "gladys_finish",
+                        "gladys_length", "original_start", "original_finish", "original_length",
+                        "difference", "percent_diff", "original_artist", "link")
+
 ### What is the mean time of the performance? ----------------------------------------------
 
 avg_anthem_time <- sb_times %>%
@@ -57,7 +63,7 @@ ggplot(sb_times_hist, aes(length_s, fill = sex)) +
 
 ### magic incantation to save the plot to disk ---------------------------------------------
 
-dev.copy(png,'sex_density_plot.png')
+dev.copy(png,'sex_density_plot1.png')
 dev.off()
 
 ### Does age matter? -----------------------------------------------------------------------
@@ -96,6 +102,11 @@ sb_ts <- ts(sb_timeseries[, 2], start = c(1979, 1), frequency = 1)
 
 ### Chart # 1 -------------------------------------------------------------------------------
 
+forecast <- sb_ts %>%
+   auto.arima() %>%
+   forecast(h = 40,
+            level = c(50, 75, 95))
+
 sb_ts %>%
    auto.arima() %>%
    forecast(h = 40,
@@ -113,10 +124,32 @@ sb_ts %>%
    theme(legend.position = "none") +
    labs(y = "Length of performance (in seconds)", x = "Year",
         title = "Anthems have gotten longer",
-        subtitle = "2019 Forecasted length with 50, 75 and 95% confidence levels in blue. Dotted line is 40 year avg.",
+        subtitle = "2019 Forecasted length with 50, 75 and 95% confidence
+        levels in blue.\nDotted line is 40 year avg.",
         caption = "SOURCE: Youtube")
 
 ### magic incantation to save the plot to disk ----------------------------------------------
 
 dev.copy(png,'anthem_length_over_time.png')
 dev.off()
+
+### Does Gladys tend to sing longer than the original artist when she covers a song? --------
+
+covers_hist <- covers %>%
+   mutate(difference = as.numeric(difference),
+          song_and_artist = paste0(song,"\n", "(",original_artist,")"))
+
+mean_cover_diff <- mean(covers_hist$difference)
+mean_cover_pct_diff <-
+
+### bar chart -------------------------------------------------------------------------------
+
+ggplot(covers_hist, aes(x = reorder(song_and_artist, -difference), y = difference)) +
+   geom_bar(stat = "identity", position = position_dodge()) +
+   theme_minimal() +
+   # theme_538 + # I need the theme fonts!
+   ggtitle(paste("Gladys Knight's covers are", round(mean_cover_diff, 1), "seconds longer than the original on average")) +
+   labs(x = "Cover", y = "Difference in length (seconds)",
+        caption = "Source: Youtube") +
+   theme(axis.text.x = element_text(angle = 75, hjust = 1)) +
+   guides(fill = guide_legend(title = ""))

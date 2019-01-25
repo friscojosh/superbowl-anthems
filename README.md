@@ -9,3 +9,7 @@ Sex of the signer is significant. Men tend to sing the anthem quicker than women
 have sung the anthem in recent years.
 
 ![alt text](https://github.com/friscojosh/superbowl-anthems/blob/master/sex_density_plot1.png "")
+
+Finally, Gladys Knight's covers are 7% longer than the originals, on average.
+
+![alt text](https://github.com/friscojosh/superbowl-anthems/blob/master/covers.png "")
