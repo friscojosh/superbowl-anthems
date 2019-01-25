@@ -10,6 +10,6 @@ have sung the anthem in recent years.
 
 ![alt text](https://github.com/friscojosh/superbowl-anthems/blob/master/sex_density_plot.png "")
 
-Finally, Gladys Knight's covers are 7% longer than the originals, on average.
+Finally, Gladys Knight's covers are 7% longer than the originals on average.
 
 ![alt text](https://github.com/friscojosh/superbowl-anthems/blob/master/covers.png "")
