@@ -62,9 +62,8 @@ ggplot(sb_times_hist, aes(length_s, fill = sex)) +
         caption = "SOURCE: Youtube")
 
 ### magic incantation to save the plot to disk ---------------------------------------------
-
-dev.copy(png,'sex_density_plot1.png')
-dev.off()
+###
+ggsave("sex_density_plot.png")
 
 ### Does age matter? -----------------------------------------------------------------------
 
@@ -128,10 +127,8 @@ sb_ts %>%
         levels in blue.\nDotted line is 40 year avg.",
         caption = "SOURCE: Youtube")
 
-### magic incantation to save the plot to disk ----------------------------------------------
-
-dev.copy(png,'anthem_length_over_time.png')
-dev.off()
+### save the plot to disk ----------------------------------------------
+ggsave("anthem_length_over_time1.png")
 
 ### Does Gladys tend to sing longer than the original artist when she covers a song? --------
 
