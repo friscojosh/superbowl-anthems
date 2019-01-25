@@ -8,4 +8,4 @@ Using ARIMA, the best forecast we have for the 2019 Anthem is 121 seconds +/- 36
 Sex of the signer is significant. Men tend to sing the anthem quicker than women - though not many men
 have sung the anthem in recent years.
 
-![alt text](https://github.com/friscojosh/superbowl-anthems/blob/master/sex_density_plot.png "")
+![alt text](https://github.com/friscojosh/superbowl-anthems/blob/master/sex_density_plot1.png "")
