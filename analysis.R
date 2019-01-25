@@ -123,8 +123,7 @@ sb_ts %>%
    theme(legend.position = "none") +
    labs(y = "Length of performance (in seconds)", x = "Year",
         title = "Anthems have gotten longer",
-        subtitle = "2019 Forecasted length with 50, 75 and 95% confidence
-        levels in blue.\nDotted line is 40 year avg.",
+        subtitle = "2019 Forecasted length with 50, 75 and 95% confidence levels in blue.\nDotted line is 40 year avg.",
         caption = "SOURCE: Youtube")
 
 ### save the plot to disk ----------------------------------------------
@@ -150,3 +149,5 @@ ggplot(covers_hist, aes(x = reorder(song_and_artist, -difference), y = differenc
         caption = "Source: Youtube") +
    theme(axis.text.x = element_text(angle = 75, hjust = 1)) +
    guides(fill = guide_legend(title = ""))
+
+ggsave("covers.png")
