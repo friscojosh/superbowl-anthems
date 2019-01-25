@@ -27,7 +27,7 @@ avg_anthem_time <- sb_times %>%
 avg_anthem_time_sex <- sb_times %>%
    mutate(length_s = as.numeric(length_s)) %>%
    na.omit() %>%
-   filter()
+   filter(sex != "Ensemble") %>%
    group_by(sex) %>%
    summarize(avg_length = mean(length_s))
 
@@ -45,7 +45,7 @@ sb_times_hist <- sb_times %>%
    na.omit()
 
 ggplot(sb_times_hist, aes(length_s, fill = sex)) +
-   geom_density(alpha = .5, binwidth = 10) +
+   geom_density(alpha = .5) +
    geom_vline(xintercept = men$avg_length, color = "black", linetype = "dashed") +
    geom_vline(xintercept = women$avg_length, color = "black", linetype = "dashed") +
    theme_538 +
@@ -71,8 +71,6 @@ calc_age <- function(birthDate, refDate = Sys.Date()) {
    period$year
 
 }
-
-calc_age("1990-06-30", "2003-07-12")
 
 sb_ages <- sb_times %>%
    mutate(sb_date = paste0(as.character(year),"-02-01"),
@@ -101,8 +99,7 @@ sb_ts <- ts(sb_timeseries[, 2], start = c(1979, 1), frequency = 1)
 sb_ts %>%
    auto.arima() %>%
    forecast(h = 40,
-            level = c(50, 75, 95),
-            robust = TRUE) %>%
+            level = c(50, 75, 95)) %>%
    autoplot() +
    geom_hline(yintercept = 105, color = "gray", linetype = "dashed") +
    scale_x_continuous(
@@ -116,8 +113,7 @@ sb_ts %>%
    theme(legend.position = "none") +
    labs(y = "Length of performance (in seconds)", x = "Year",
         title = "Anthems have gotten longer",
-        subtitle = "2019 Forecasted length with 50, 75 and 95% confidence levels in blue.\n
-        Dotted line is 40 year avg.",
+        subtitle = "2019 Forecasted length with 50, 75 and 95% confidence levels in blue. Dotted line is 40 year avg.",
         caption = "SOURCE: Youtube")
 
 ### magic incantation to save the plot to disk ----------------------------------------------
