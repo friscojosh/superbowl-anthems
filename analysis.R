@@ -50,15 +50,15 @@ sb_times_hist <- sb_times %>%
    filter(sex != "Ensemble") %>%
    na.omit()
 
-ggplot(sb_times_hist, aes(length_s, fill = sex)) +
-   geom_density(alpha = .5) +
-   geom_vline(xintercept = men$avg_length, color = "black", linetype = "dashed") +
-   geom_vline(xintercept = women$avg_length, color = "black", linetype = "dashed") +
+ggplot(sb_times_hist, aes(length_s, color = sex)) +
+   geom_freqpoly(alpha = 1, binwidth = 1.8, bins = 40) +
+   geom_vline(xintercept = men$avg_length, color = "#18B3B7", linetype = "dashed") +
+   geom_vline(xintercept = women$avg_length, color = "#F16E6A", linetype = "dashed") +
    theme_538 +
    theme(legend.position="none") +
-   labs(y = "Density", x = "Anthem Length (seconds)",
+   labs(y = "Count", x = "Anthem Length (seconds)",
         title = "Women perform longer than men TKTK",
-        subtitle = "Distribution of female performance length in pink, male in blue.",
+        subtitle = "Distribution of female performance length in pink, male in blue. Dashed lines are averages.",
         caption = "SOURCE: Youtube")
 
 ### magic incantation to save the plot to disk ---------------------------------------------
