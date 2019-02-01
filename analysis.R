@@ -56,6 +56,18 @@ sb_times_hist <- sb_times %>%
    filter(sex != "Ensemble") %>%
    na.omit()
 
+library(beeswarm)
+
+colnames(df) <- c("year", "superbowl", "singer",
+                  "start", "end", "length", "length_s",
+                  "sex", "youtube", "birthdate")
+df[c("length_s", "sex")]
+df <- subset(df, sex != "Ensemble")
+
+p1 <- beeswarm(sb_times_hist$length_s, pch = 16, cex=2.5, pwcol = as.factor(sb_times_hist$sex), horizontal=TRUE)
+
+ggsave(p1, filename = "beeswarm.pdf", device = cairo_pdf)
+
 ggplot(sb_times_hist, aes(length_s, color = sex)) +
    geom_freqpoly(alpha = 1, binwidth = 1.8, bins = 40) +
    geom_vline(xintercept = men$avg_length, color = "#18B3B7", linetype = "dashed") +
