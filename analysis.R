@@ -1,13 +1,14 @@
-### -----------------------------------------------------------------------------------------
+### -----------------------------------------------------------------------------------------------
 ### Analysis of Super Bowl National Anthem performance times
 ###
-### -----------------------------------------------------------------------------------------
+### -----------------------------------------------------------------------------------------------
 
 library(tidyverse)
 library(forecast)
 library(lubridate)
 library(eeptools)
 require("theme538")
+library("Cairo")
 
 sb_times <- read_csv("data/superbowl_times.csv")
 
@@ -21,14 +22,14 @@ colnames(covers) <- c("song", "gladys_start", "gladys_finish",
                         "gladys_length", "original_start", "original_finish", "original_length",
                         "difference", "percent_diff", "original_artist", "link")
 
-### What is the mean time of the performance? ----------------------------------------------
+### What is the mean time of the performance? -----------------------------------------------------
 
 avg_anthem_time <- sb_times %>%
    mutate(length_s = as.numeric(length_s)) %>%
    na.omit() %>%
    summarize(avg_length = mean(length_s))
 
-### Are mens and women's performances different? -------------------------------------------
+### Are mens and women's performances different? --------------------------------------------------
 
 avg_anthem_time_sex <- sb_times %>%
    mutate(length_s = as.numeric(length_s)) %>%
@@ -42,6 +43,11 @@ men <- avg_anthem_time_sex %>%
 
 women <- avg_anthem_time_sex %>%
    filter(sex == "F")
+
+### Let's make a sex model!
+
+sex_model <- lm(data = sb_ages, length_s ~ sex)
+summary(sex_model)
 
 ### Let's plot the distributions of both mens and womens anthems
 
@@ -61,11 +67,11 @@ ggplot(sb_times_hist, aes(length_s, color = sex)) +
         subtitle = "Distribution of female performance length in pink, male in blue. Dashed lines are averages.",
         caption = "SOURCE: Youtube")
 
-### magic incantation to save the plot to disk ---------------------------------------------
-###
+### magic incantation to save the plot to disk ----------------------------------------------------
+
 ggsave("sex_density_plot.png")
 
-### Does age matter? -----------------------------------------------------------------------
+### Does age matter? ------------------------------------------------------------------------------
 
 calc_age <- function(birthDate, refDate = Sys.Date()) {
 
@@ -87,10 +93,7 @@ sb_ages <- sb_times %>%
 age_model <- lm(data = sb_ages, length_s ~ age_at_sb)
 summary(age_model)
 
-sex_model <- lm(data = sb_ages, length_s ~ sex)
-summary(sex_model)
-
-### Create a time series object to perform ARIMA on ----------------------------------------
+### Create a time series object to perform ARIMA on -----------------------------------------------
 
 sb_timeseries <- sb_times %>%
    arrange(year) %>%
@@ -99,14 +102,14 @@ sb_timeseries <- sb_times %>%
 
 sb_ts <- ts(sb_timeseries[, 2], start = c(1979, 1), frequency = 1)
 
-### Chart # 1 -------------------------------------------------------------------------------
+### Chart # 1 -------------------------------------------------------------------------------------
 
 forecast <- sb_ts %>%
    auto.arima() %>%
    forecast(h = 40,
             level = c(50, 75, 95))
 
-sb_ts %>%
+t <- sb_ts %>%
    auto.arima() %>%
    forecast(h = 40,
             level = c(50, 75, 95)) %>%
@@ -122,28 +125,31 @@ sb_ts %>%
    theme_538 +
    theme(legend.position = "none") +
    labs(y = "Length of performance (in seconds)", x = "Year",
-        title = "Anthems have gotten longer",
+        title = "Anthems performances have gotten longer over time.",
         subtitle = "2019 Forecasted length with 50, 75 and 95% confidence levels in blue.\nDotted line is 40 year avg.",
         caption = "SOURCE: Youtube")
 
-### save the plot to disk ----------------------------------------------
+t
+
+ggsave(t, filename = "arimia.pdf", device = cairo_pdf)
+
+### save the plot to disk -------------------------------------------------------------------------
+
 ggsave("anthem_length_over_time1.png")
 
-### Does Gladys tend to sing longer than the original artist when she covers a song? --------
+### Does Gladys tend to sing longer than the original artist when she covers a song? --------------
 
 covers_hist <- covers %>%
    mutate(difference = as.numeric(difference),
           song_and_artist = paste0(song,"\n", "(",original_artist,")"))
 
 mean_cover_diff <- mean(covers_hist$difference)
-mean_cover_pct_diff <-
 
-### bar chart -------------------------------------------------------------------------------
+### bar chart -------------------------------------------------------------------------------------
 
 ggplot(covers_hist, aes(x = reorder(song_and_artist, -difference), y = difference)) +
    geom_bar(stat = "identity", position = position_dodge()) +
    theme_minimal() +
-   # theme_538 + # I need the theme fonts!
    ggtitle(paste("Gladys Knight's covers are", round(mean_cover_diff, 1), "seconds longer than the original on average")) +
    labs(x = "Cover", y = "Difference in length (seconds)",
         caption = "Source: Youtube") +
