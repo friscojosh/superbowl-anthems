@@ -9,6 +9,7 @@ library(lubridate)
 library(eeptools)
 require("theme538")
 library("Cairo")
+library(beeswarm)
 
 sb_times <- read_csv("data/superbowl_times.csv")
 
@@ -26,6 +27,7 @@ colnames(covers) <- c("song", "gladys_start", "gladys_finish",
 
 avg_anthem_time <- sb_times %>%
    mutate(length_s = as.numeric(length_s)) %>%
+   filter(year != 1988) %>%
    na.omit() %>%
    summarize(avg_length = mean(length_s))
 
@@ -56,17 +58,7 @@ sb_times_hist <- sb_times %>%
    filter(sex != "Ensemble") %>%
    na.omit()
 
-library(beeswarm)
-
-colnames(df) <- c("year", "superbowl", "singer",
-                  "start", "end", "length", "length_s",
-                  "sex", "youtube", "birthdate")
-df[c("length_s", "sex")]
-df <- subset(df, sex != "Ensemble")
-
-p1 <- beeswarm(sb_times_hist$length_s, pch = 16, cex=2.5, pwcol = as.factor(sb_times_hist$sex), horizontal=TRUE)
-
-ggsave(p1, filename = "beeswarm.pdf", device = cairo_pdf)
+beeswarm(sb_times_hist$length_s, pch = 16, cex=2.5, pwcol = as.factor(sb_times_hist$sex), horizontal=TRUE)
 
 ggplot(sb_times_hist, aes(length_s, color = sex)) +
    geom_freqpoly(alpha = 1, binwidth = 1.8, bins = 40) +
